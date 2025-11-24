@@ -1,0 +1,52 @@
+{% extends 'todos/base.html' %}
+
+{% block content %}
+<h1>Todo List</h1>
+
+<div class="header-actions">
+    <a href="{% url 'todo_create' %}" class="btn btn-primary">Add New Todo</a>
+</div>
+
+<h2>Active Todos</h2>
+{% for todo in active_todos %}
+<div class="card">
+    <div class="todo-content">
+        <div class="todo-title">{{ todo.title }}</div>
+        <div class="todo-meta">Due: {{ todo.due_date|default:"No due date" }}</div>
+    </div>
+    <div class="todo-actions">
+        <a href="{% url 'todo_update' todo.pk %}" class="btn btn-secondary btn-sm">Edit</a>
+        <a href="{% url 'todo_delete' todo.pk %}" class="btn btn-danger btn-sm">Delete</a>
+        <form action="{% url 'todo_resolve' todo.pk %}" method="post" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success btn-sm">Resolve</button>
+        </form>
+    </div>
+</div>
+{% empty %}
+<div class="empty-state">
+    <p>No active todos. Great job!</p>
+</div>
+{% endfor %}
+
+<h2>Resolved Todos</h2>
+{% for todo in resolved_todos %}
+<div class="card todo-resolved">
+    <div class="todo-content">
+        <div class="todo-title">{{ todo.title }}</div>
+        <div class="todo-meta">Created: {{ todo.created_at|date:"M d, Y" }}</div>
+    </div>
+    <div class="todo-actions">
+        <a href="{% url 'todo_delete' todo.pk %}" class="btn btn-danger btn-sm">Delete</a>
+        <form action="{% url 'todo_resolve' todo.pk %}" method="post" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-secondary btn-sm">Unresolve</button>
+        </form>
+    </div>
+</div>
+{% empty %}
+<div class="empty-state">
+    <p>No resolved todos yet.</p>
+</div>
+{% endfor %}
+{% endblock %}
